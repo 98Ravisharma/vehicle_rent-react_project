@@ -66,6 +66,36 @@ function PropertyCard(props) {
 function Property() {
   const [category, setCategory] = useState("Featured");
 
+  const [vehicleTypes, setVehiclesTypes] = useState(null);
+
+  const fetchCategories = async () => {
+    let tmpData = [];
+
+    
+    tmpData.push({
+      id: Math.random(),
+      data:{
+        name:"Featured"
+      }
+    })
+
+    const q = query(collection(db, "tbl_vehicles_types"));
+
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach((doc) => {
+      // doc.data() is never undefined for query doc snapshots
+      console.log(doc.id, " => ", doc.data());
+
+      tmpData.push({
+        id: doc.id,
+        data: doc.data()
+      })
+    });
+
+    setVehiclesTypes(tmpData);
+    fetchVehicleList();
+  };
+
   const [vehicleList, setVehicleList] = useState(null);
 
   const fetchVehicleList = async () => {
@@ -84,14 +114,14 @@ function Property() {
     });
 
 
-    setTimeout(()=>{
+    setTimeout(() => {
       setVehicleList(tmpData);
-    },1000)
- 
-  }
+    }, 1000)
 
+  }
   useEffect(() => {
-    fetchVehicleList();
+    fetchCategories();
+
   }, [])
 
   return (
@@ -118,19 +148,22 @@ function Property() {
               data-wow-delay="0.1s"
             >
               <ul className="nav nav-pills d-inline-flex justify-content-end mb-5">
-                {WEBSITE?.property_listing?.category?.map((item, key) =>
-                  category == item ? (
+                {vehicleTypes?.map((item, key) =>
+                  category == item.data.name ? (
                     <li className="nav-item me-2 m-1">
                       <a
                         className="btn btn-outline-primary active"
                         data-bs-toggle="pill"
                         href="#tab-2"
 
+                        style={{
+                          textTransform:"capitalize"
+                        }}
                         onClick={() => {
-                          setCategory(item)
+                          setCategory(item.data.name)
                         }}
                       >
-                        {item}
+                        {item.data.name}
                       </a>
                     </li>
                   ) : (
@@ -139,12 +172,14 @@ function Property() {
                         className="btn btn-outline-primary"
                         data-bs-toggle="pill"
                         href="#tab-2"
-
+                        style={{
+                          textTransform:"capitalize"
+                        }}
                         onClick={() => {
-                          setCategory(item)
+                          setCategory(item.data.name)
                         }}
                       >
-                        {item}
+                        {item.data.name}
                       </a>
                     </li>
                   )
