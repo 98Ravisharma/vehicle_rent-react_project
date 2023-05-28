@@ -32,6 +32,8 @@ let WEBSITE = {
     property_types: [
         { name: "Mini Car - 4 Seater", img: "https://imgd-ct.aeplcdn.com/1056x660/n/6gouesa_1463328.jpg?q=75", available: 24 },
         { name: "Medium Car - 5 Seater", img: "https://imgd.aeplcdn.com/1200x900/n/cw/ec/40530/i20-exterior-right-front-three-quarter-5.jpeg?q=75", available: 22 },
+        
+        
         { name: "Large Car - 7 Seater", img: "https://prog-ace-cdn.azureedge.net/-/media/project/mahindra/dotcom/mahindra/dark-theme-mahindra-images/xuv700optimizedimages/mahindra-xuv700.png?rev=975a1e4402e048a3b9d1ccef504ff1b4", available: 40 },
 
         { name: "Bike", img: "https://images.carandbike.com/bike-images/colors/bajaj/ct-100/bajaj-ct-100-gloss-ebony-black-with-blue-decals.png?v=1587971749", available: 23 },

@@ -48,7 +48,7 @@ function BookNow() {
 
     setFormData((prevFormData) => ({
       ...prevFormData,
-      ["date"]: currentdate.getDate(),
+      ["date"]: currentdate.getDate() + "/" +  currentdate.getMonth() + "/" + currentdate.getFullYear(),
     }));
     setFormData((prevFormData) => ({
       ...prevFormData,
