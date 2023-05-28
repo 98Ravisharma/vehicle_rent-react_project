@@ -1,5 +1,6 @@
 import React from "react";
 import WEBSITE from "../Constant/constant";
+import { useState } from "react";
 
 function CategoryCard(props) {
   return (
@@ -10,7 +11,7 @@ function CategoryCard(props) {
             <img className="img-fluid" src={props.img} style={{height:"150px",objectFit:"cover"}} alt="Icon" />
           </div>
           <h6>{props.name}</h6>
-          <span>{props.available} Properties</span>
+          <span>{props.available} Vehicles</span>
         </div>
       </a>
     </div>
@@ -18,6 +19,10 @@ function CategoryCard(props) {
 }
 
 function Category() {
+
+  const [vehicleTypes,setVehiclesTypes]  = useState(null);
+
+
   return (
     <>
       {/* Category Start */}
@@ -35,7 +40,7 @@ function Category() {
           </div>
           <div className="row g-4">
             {
-              WEBSITE.property_types.map((item,key)=>(
+              vehicleTypes?.map((item,key)=>(
                 <CategoryCard name={item.name} img={item.img} key={key} available={item.available} />
               ))
             }

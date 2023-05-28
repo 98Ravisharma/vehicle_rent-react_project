@@ -4,10 +4,14 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import WEBSITE from "../Constant/constant";
 
+import { collection, addDoc } from "firebase/firestore";
+
+import db from "../firebase";
+
 function BookNow() {
   const [vehicleType, setVehicleType] = useState("");
 
-  const [isSending,setIsSending] = useState(false);
+  const [isSending, setIsSending] = useState(false);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -17,8 +21,8 @@ function BookNow() {
     license: "",
     address: "",
     vehicle: "",
-    date:"",
-    time:""
+    date: "",
+    time: ""
   });
 
   const handleInputChange = (event) => {
@@ -30,9 +34,10 @@ function BookNow() {
   };
 
   const handleSubmit = async () => {
+    console.clear()
     setIsSending(true);
 
-      setFormData((prevFormData) => ({
+    setFormData((prevFormData) => ({
       ...prevFormData,
       ["vehicle"]: vehicleType,
     }));
@@ -47,35 +52,16 @@ function BookNow() {
     }));
     setFormData((prevFormData) => ({
       ...prevFormData,
-      ["time"]: currentdate.getHours() + ":" + currentdate.getMinutes()+":"+currentdate.getSeconds(),
+      ["time"]: currentdate.getHours() + ":" + currentdate.getMinutes() + ":" + currentdate.getSeconds(),
     }));
 
-    await fetch("https://api.apispreadsheets.com/data/GwTMp8O9gOguT9zQ/", {
-      method: "POST",
-      body: JSON.stringify({
-        data: formData,
-      }),
-    }).then((res) => {
-      if (res.status === 201) {
-        alert("Your Request has been submitted !, we will contact you in short time via mail or phone !");
-
-        setFormData({
-          name: "",
-          email: "",
-          phone: "",
-          aadhar: "",
-          license: "",
-          address: "",
-          vehicle: "",
-          date:"",
-          time:""
-        })
-      } else {
-        alert("Unable to submit request !");
-      }
-    });
-
-
+    try {
+      // Add a new document with a generated id.
+      const docRef = await addDoc(collection(db, "tbl_bookings"), formData);
+      console.log("Document written with ID: ", docRef.id);
+    } catch (err) {
+      console.log("Error:", err);
+    }
     setIsSending(false);
   };
 
@@ -221,7 +207,7 @@ function BookNow() {
                       }}
                       className="btn btn-dark border-0 w-100 py-3"
                     >
-                       {isSending ? "Sending Request..." : "Submit Request"}
+                      {isSending ? "Sending Request..." : "Submit Request"}
                     </button>
                   ) : (
                     <button
