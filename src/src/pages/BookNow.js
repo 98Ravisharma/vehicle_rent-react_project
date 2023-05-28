@@ -4,12 +4,15 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import WEBSITE from "../Constant/constant";
 
-import { collection, addDoc } from "firebase/firestore";
-
 import db from "../firebase";
+import { collection, query, addDoc,doc,updateDoc, where, getDocs } from "firebase/firestore";
+
+import { useEffect } from "react";
 
 function BookNow() {
   const [vehicleType, setVehicleType] = useState("");
+
+  const [vehicleTypes, setVehiclesTypes] = useState(null);
 
   const [isSending, setIsSending] = useState(false);
 
@@ -37,6 +40,20 @@ function BookNow() {
     console.clear()
     setIsSending(true);
 
+    try {
+
+    const q = query(collection(db, "tbl_vehicles_types"),where("name","==",vehicleType));
+
+    const querySnapshot = await getDocs(q);
+    const vehicleTypeDoc = doc(db, "tbl_vehicles_types",querySnapshot.docs[0].id);
+
+    await updateDoc(vehicleTypeDoc, {
+        available: querySnapshot.docs[0].data().available - 1
+      });
+    } catch (err) {
+      console.log(err)
+    }
+
     setFormData((prevFormData) => ({
       ...prevFormData,
       ["vehicle"]: vehicleType,
@@ -48,7 +65,7 @@ function BookNow() {
 
     setFormData((prevFormData) => ({
       ...prevFormData,
-      ["date"]: currentdate.getDate() + "/" +  currentdate.getMonth() + "/" + currentdate.getFullYear(),
+      ["date"]: currentdate.getDate() + "/" + currentdate.getMonth() + "/" + currentdate.getFullYear(),
     }));
     setFormData((prevFormData) => ({
       ...prevFormData,
@@ -58,12 +75,41 @@ function BookNow() {
     try {
       // Add a new document with a generated id.
       const docRef = await addDoc(collection(db, "tbl_bookings"), formData);
+
+      alert("Request Submitte..! We will contact you by mail shortly...!")
       console.log("Document written with ID: ", docRef.id);
     } catch (err) {
       console.log("Error:", err);
     }
+
+
+   window.location.replace("./booknow");
+
     setIsSending(false);
   };
+
+  const fetchCategories = async () => {
+    let tmpData = [];
+
+    const q = query(collection(db, "tbl_vehicles_types"));
+
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach((doc) => {
+      // doc.data() is never undefined for query doc snapshots
+      console.log(doc.id, " => ", doc.data());
+
+      tmpData.push({
+        id: doc.id,
+        data: doc.data()
+      })
+    });
+
+    setVehiclesTypes(tmpData);
+  };
+
+  useEffect(() => {
+    fetchCategories();
+  }, [])
 
   return (
     <div className="container-xxl bg-white p-0">
@@ -171,9 +217,9 @@ function BookNow() {
                 <option selected="" value="">
                   Vehicle Type
                 </option>
-                {WEBSITE.property_types.map((item, key) => (
-                  <option key={key} value={item.name}>
-                    {item.name}
+                {vehicleTypes?.map((item, key) => (
+                  <option key={key} value={item.data.name}>
+                    {item.data.name}
                   </option>
                 ))}
               </select>
@@ -187,19 +233,17 @@ function BookNow() {
                   style={{ textAlign: "left" }}
                 >
                   Available :{" "}
-                  {WEBSITE.property_types
-                    .filter((item) => item.name == vehicleType)
-                    .map((item, key) => item.available)}
+                  {vehicleTypes?.filter((item) => item.data.name == vehicleType)
+                    .map((item, key) => item.data.available)}
                 </button>
               </div>
             </div>
           )}
           <div className="row g-2 mt-1">
             <div className="col">
-              {WEBSITE.property_types
-                .filter((item) => item.name == vehicleType)
+              {vehicleTypes?.filter((item) => item.data.name == vehicleType)
                 .map((item, key) =>
-                  item.available == 0 ? (
+                  item.data.available == 0 ? (
                     <button
                       key={key}
                       style={{
@@ -207,7 +251,7 @@ function BookNow() {
                       }}
                       className="btn btn-dark border-0 w-100 py-3"
                     >
-                      {isSending ? "Sending Request..." : "Submit Request"}
+                      Not Available
                     </button>
                   ) : (
                     <button
