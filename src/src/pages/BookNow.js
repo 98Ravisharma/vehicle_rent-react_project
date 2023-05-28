@@ -7,6 +7,8 @@ import WEBSITE from "../Constant/constant";
 function BookNow() {
   const [vehicleType, setVehicleType] = useState("");
 
+  const [isSending,setIsSending] = useState(false);
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -27,15 +29,16 @@ function BookNow() {
     }));
   };
 
-  const handleSubmit = () => {
-    setFormData((prevFormData) => ({
+  const handleSubmit = async () => {
+    setIsSending(true);
+
+      setFormData((prevFormData) => ({
       ...prevFormData,
       ["vehicle"]: vehicleType,
     }));
     // TODO: Perform API call here to send data
     // You can use libraries like axios or fetch to make the API request
 
-   
     let currentdate = new Date();
 
     setFormData((prevFormData) => ({
@@ -47,10 +50,7 @@ function BookNow() {
       ["time"]: currentdate.getHours() + ":" + currentdate.getMinutes()+":"+currentdate.getSeconds(),
     }));
 
-    console.log(formData); // For testing, log the form data to the console
-
-
-    fetch("https://api.apispreadsheets.com/data/GwTMp8O9gOguT9zQ/", {
+    await fetch("https://api.apispreadsheets.com/data/GwTMp8O9gOguT9zQ/", {
       method: "POST",
       body: JSON.stringify({
         data: formData,
@@ -74,6 +74,9 @@ function BookNow() {
         alert("Unable to submit request !");
       }
     });
+
+
+    setIsSending(false);
   };
 
   return (
@@ -218,7 +221,7 @@ function BookNow() {
                       }}
                       className="btn btn-dark border-0 w-100 py-3"
                     >
-                      Submit Request
+                       {isSending ? "Sending Request..." : "Submit Request"}
                     </button>
                   ) : (
                     <button
@@ -229,7 +232,7 @@ function BookNow() {
                       }}
                       className="btn btn-dark border-0 w-100 py-3"
                     >
-                      Submit Request
+                      {isSending ? "Sending Request..." : "Submits Request"}
                     </button>
                   )
                 )}
