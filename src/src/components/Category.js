@@ -30,6 +30,7 @@ function Category() {
   const [vehicleTypes, setVehiclesTypes] = useState(null);
 
   const fetchCategories = async () => {
+
     let tmpData = [];
 
     const q = query(collection(db, "tbl_vehicles_types"));
@@ -44,7 +45,6 @@ function Category() {
         data: doc.data()
       })
     });
-
 
     setTimeout(()=>{
       setVehiclesTypes(tmpData);

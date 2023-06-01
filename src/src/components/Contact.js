@@ -1,7 +1,39 @@
-import React from "react";
+import React, { useState } from "react";
 import WEBSITE from "../Constant/constant";
 
+import db from "../firebase";
+import { collection, addDoc } from "firebase/firestore";
+
 function Contact() {
+
+  const [name, setName] = useState(null);
+  const [email, setEmail] = useState(null);
+  const [subject, setSubject] = useState(null);
+  const [message, setMessage] = useState(null);
+
+  const [isSending, setIsSending] = useState(false);
+
+  const handleSubmit = async () => {
+    setIsSending(true);
+    try {
+
+      const docRef = await addDoc(collection(db, "tbl_contact_us"), {
+        name: name,
+        email:email,
+        subject:subject,
+        message:message
+      });
+      console.log("Document written with ID: ", docRef.id);
+
+      alert("Request Submitted !");
+      window.location.replace("./contact");
+    } catch (error) {
+      console.log("Unable to submit contact form " + error)
+    }
+    setIsSending(false);
+  }
+
+
   return (
     <>
       {/* Contact Start */}
@@ -82,7 +114,7 @@ function Contact() {
             <div className="col-md-6 wow fadeInUp" data-wow-delay="0.1s">
               <iframe
                 className="position-relative rounded w-100 h-100"
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3001156.4288297426!2d-78.01371936852176!3d42.72876761954724!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4ccc4bf0f123a5a9%3A0xddcfc6c1de189567!2sNew%20York%2C%20USA!5e0!3m2!1sen!2sbd!4v1603794290143!5m2!1sen!2sbd"
+                src="https://maps.google.com/maps?q=30.9010,75.8573&hl=es;z=14&output=embed"
                 frameBorder={0}
                 style={{ minHeight: 400, border: 0 }}
                 allowFullScreen=""
@@ -104,6 +136,8 @@ function Contact() {
                           className="form-control"
                           id="name"
                           placeholder="Your Name"
+
+                          onChange={(e) => setName(e.target.value)}
                         />
                         <label htmlFor="name">Your Name</label>
                       </div>
@@ -115,6 +149,8 @@ function Contact() {
                           className="form-control"
                           id="email"
                           placeholder="Your Email"
+
+                          onChange={(e) => setEmail(e.target.value)}
                         />
                         <label htmlFor="email">Your Email</label>
                       </div>
@@ -126,6 +162,8 @@ function Contact() {
                           className="form-control"
                           id="subject"
                           placeholder="Subject"
+
+                          onChange={(e) => setSubject(e.target.value)}
                         />
                         <label htmlFor="subject">Subject</label>
                       </div>
@@ -138,6 +176,8 @@ function Contact() {
                           id="message"
                           style={{ height: 150 }}
                           defaultValue={""}
+
+                          onChange={(e) => setMessage(e.target.value)}
                         />
                         <label htmlFor="message">Message</label>
                       </div>
@@ -145,9 +185,13 @@ function Contact() {
                     <div className="col-12">
                       <button
                         className="btn btn-primary w-100 py-3"
-                        type="submit"
+                        type="button"
+
+                        onClick={() => handleSubmit()}
                       >
-                        Send Message
+                        {
+                          isSending ? "Sending Message" : "Send Message"
+                        }
                       </button>
                     </div>
                   </div>
