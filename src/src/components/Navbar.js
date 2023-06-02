@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 function SubItem(props) {
   return (
     <Link
-      to={(props.name == "home") ? ("/") : ("/"+props.name.toString())}
+      to={(props.name == "home") ? ("/home") : ("/"+props.name.toString())}
       style={{
         textTransform: "capitalize",
       }}
@@ -33,11 +33,11 @@ function NavItem(props) {
       </div>
     </div>
   ) : props.selected ? (
-    <Link to={(props.name == "home") ? ("/") : ("/"+props.name.toString())} className="nav-item nav-link active">
+    <Link to={(props.name == "home") ? ("/home") : ("/"+props.name.toString())} className="nav-item nav-link active">
       {props?.name}
     </Link>
   ) : (
-    <Link to={(props.name == "home") ? ("/") : ("/"+props.name.toString())} className="nav-item nav-link">
+    <Link to={(props.name == "home") ? ("/home") : ("/"+props.name.toString())} className="nav-item nav-link">
       {props?.name}
     </Link>
   );
@@ -82,8 +82,8 @@ function Navbar() {
                 />
               ))}
             </div>
-            <Link to="/booknow" className="btn btn-primary px-3 d-none d-lg-flex">
-              Book Now
+            <Link to="/login" className="btn btn-primary px-3 d-none d-lg-flex">
+              Log Out
             </Link>
           </div>
         </nav>

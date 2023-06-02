@@ -17,12 +17,12 @@ function HomePage(){
             {/* <Loader /> */}
             <Navbar />
             <Header />
-            <Search />
+            {/* <Search /> */}
             <Category />
             <About />
             <Property />
             <Action />
-            <Team />
+            {/* <Team /> */}
             <Footer />
         </div>
     )

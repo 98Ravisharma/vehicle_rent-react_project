@@ -1,6 +1,8 @@
 import React from "react";
 import WEBSITE from "../Constant/constant";
 
+import { Link } from "react-router-dom";
+
 function Action() {
   return (
     <>
@@ -27,14 +29,11 @@ function Action() {
                       {WEBSITE.action.desc}
                     </p>
                   </div>
-                  <a href="" className="btn btn-primary py-3 px-4 me-2">
+                  <Link to="/contact" className="btn btn-primary py-3 px-4 me-2">
                     <i className="fa fa-phone-alt me-2" />
-                    Make A Call
-                  </a>
-                  <a href="" className="btn btn-dark py-3 px-4">
-                    <i className="fa fa-calendar-alt me-2" />
-                    Get Appoinment
-                  </a>
+                   Contact Us
+                  </Link>
+                 
                 </div>
               </div>
             </div>

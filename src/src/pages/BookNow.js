@@ -9,32 +9,56 @@ import { collection, query, addDoc,doc,updateDoc, where, getDocs } from "firebas
 
 import { useEffect } from "react";
 
+import { useNavigate } from "react-router-dom";
+
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+
+const auth = getAuth();
+
+const findDays = (from,to) => {
+  const date1 = new Date(from);
+const date2 = new Date(to);
+
+// Calculate the time difference in milliseconds
+const timeDiff = Math.abs(date2.getTime() - date1.getTime());
+
+// Convert the time difference to days
+const daysDiff = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+
+return daysDiff;
+
+}
+
 function BookNow() {
-  const [vehicleType, setVehicleType] = useState("");
+  const userId = useRef(null);
 
-  const [vehicleTypes, setVehiclesTypes] = useState(null);
+  const navigate = useNavigate();
 
+  const [vehiclesTypes, setVehiclesTypes] = useState(null);
   const [isSending, setIsSending] = useState(false);
+  const [name,setName] = useState(null);
+  const [email,setEmail] = useState(null);
+  const [phone,setPhone] = useState(null);
+  const [aadhar,setAadhar] = useState(null);
+  const [license,setLicense] = useState(null);
+  const [address,setAddress] = useState(null);
+  const [vehicle,setVehicle] = useState(null);
+  const [fromDate,setFromDate] = useState(null);
+  const [toDate,setToDate] = useState(null);
 
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    aadhar: "",
-    license: "",
-    address: "",
-    vehicle: "",
-    date: "",
-    time: ""
-  });
+  const isUserLogin = async () => {
+    await onAuthStateChanged(auth, (user) => {
+      if (user) {
+        userId.current = user.uid;
+       
 
-  const handleInputChange = (event) => {
-    const { name, value } = event.target;
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      [name]: value,
-    }));
+        console.log(userId.current)
+      }else{
+        navigate("/login");
+      }
+    });
   };
+
 
   const handleSubmit = async () => {
     console.clear()
@@ -42,7 +66,7 @@ function BookNow() {
 
     try {
 
-    const q = query(collection(db, "tbl_vehicles_types"),where("name","==",vehicleType));
+    const q = query(collection(db, "tbl_vehicles_types"),where("name","==",vehicle));
 
     const querySnapshot = await getDocs(q);
     const vehicleTypeDoc = doc(db, "tbl_vehicles_types",querySnapshot.docs[0].id);
@@ -54,36 +78,30 @@ function BookNow() {
       console.log(err)
     }
 
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      ["vehicle"]: vehicleType,
-    }));
-    // TODO: Perform API call here to send data
-    // You can use libraries like axios or fetch to make the API request
-
-    let currentdate = new Date();
-
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      ["date"]: currentdate.getDate() + "/" + currentdate.getMonth() + "/" + currentdate.getFullYear(),
-    }));
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      ["time"]: currentdate.getHours() + ":" + currentdate.getMinutes() + ":" + currentdate.getSeconds(),
-    }));
-
     try {
       // Add a new document with a generated id.
-      const docRef = await addDoc(collection(db, "tbl_bookings"), formData);
+      const docRef = await addDoc(collection(db, "tbl_bookings"),{
+        name:name,
+        email:email,
+        phone:phone,
+        aadhar:aadhar,
+        license:license,
+        address:address,
+        vehicle:vehicle,
+        fromDate:fromDate,
+        toDate:toDate,
+        status:"pending",
+        userId:userId.current
+      });
 
-      alert("Request Submitte..! We will contact you by mail shortly...!")
+      alert("Request Submitted..! We will contact you by mail shortly...!")
       console.log("Document written with ID: ", docRef.id);
     } catch (err) {
       console.log("Error:", err);
     }
 
 
-   window.location.replace("./booknow");
+   window.location.replace("./bookings");
 
     setIsSending(false);
   };
@@ -108,6 +126,7 @@ function BookNow() {
   };
 
   useEffect(() => {
+    isUserLogin()
     fetchCategories();
   }, [])
 
@@ -129,95 +148,126 @@ function BookNow() {
           </div>
           <div className="row g-2 mt-2">
             <div className="col">
+            <p className="text-white">Name</p>
               <input
                 type="text"
                 className="form-control border-0 py-3"
                 placeholder="Name"
                 id="name"
                 name="name"
-                value={formData.name}
-                onChange={handleInputChange}
+                value={name}
+                onChange={(e)=>setName(e.target.value)}
               />
             </div>
           </div>
           <div className="row g-2 mt-1">
             <div className="col">
+            <p className="text-white">Email</p>
               <input
                 type="text"
                 className="form-control border-0 py-3"
                 placeholder="Email"
                 id="email"
                 name="email"
-                value={formData.email}
-                onChange={handleInputChange}
+               value={email}
+                onChange={(e)=>setEmail(e.target.value)}
               />
             </div>
           </div>
           <div className="row g-2 mt-1">
             <div className="col">
+            <p className="text-white">Phone</p>
               <input
                 type="text"
                 className="form-control border-0 py-3"
                 placeholder="Mobile Number"
                 id="phone"
                 name="phone"
-                value={formData.phone}
-                onChange={handleInputChange}
+                value={phone}
+                onChange={(e)=>setPhone(e.target.value)}
               />
             </div>
           </div>
           <div className="row g-2 mt-1">
             <div className="col">
+            <p className="text-white">Aadhar</p>
               <input
                 type="text"
                 className="form-control border-0 py-3"
                 placeholder="Aadhar Number"
                 id="aadhar"
                 name="aadhar"
-                value={formData.aadhar}
-                onChange={handleInputChange}
+                value={aadhar}
+                onChange={(e)=>setAadhar(e.target.value)}
               />
             </div>
           </div>
           <div className="row g-2 mt-1">
             <div className="col">
+            <p className="text-white">Driving License</p>
               <input
                 type="text"
                 className="form-control border-0 py-3"
                 placeholder="Driving License Number"
                 id="license"
                 name="license"
-                value={formData.license}
-                onChange={handleInputChange}
+                value={license}
+                onChange={(e)=>setLicense(e.target.value)}
               />
             </div>
           </div>
           <div className="row g-2 mt-1">
             <div className="col">
+            <p className="text-white">Address</p>
               <input
                 type="text"
                 className="form-control border-0 py-3"
                 placeholder="Address"
                 id="address"
                 name="address"
-                value={formData.address}
-                onChange={handleInputChange}
+                value={address}
+                onChange={(e)=>setAddress(e.target.value)}
               />
             </div>
           </div>
           <div className="row g-2 mt-1">
             <div className="col">
+            <p className="text-white">From</p>
+              <input
+                type="date"
+                className="form-control border-0 py-3"
+                placeholder="Address"
+                id="address"
+                name="address"
+             
+                onChange={(e)=>setFromDate(e.target.value)}
+              />
+            </div>
+            <div className="col">
+            <p className="text-white">To</p>
+              <input
+                type="date"
+                className="form-control border-0 py-3"
+                placeholder="Address"
+                id="address"
+                name="address"
+           
+                onChange={(e)=>setToDate(e.target.value)}
+              />
+            </div>
+          </div>
+     
+          <div className="row g-2 mt-1">
+            <div className="col">
+            <p className="text-white">Vehicle Type</p>
               <select
-                onChange={(e) => {
-                  setVehicleType(e.target.value);
-                  console.log(e.target.value);
-                }}
+               onChange={(e)=>setVehicle(e.target.value)}
                 className="form-select border-0 py-3"
               >
-                <option selected="" value="">
+                <option selected>
                   Vehicle Type
                 </option>
-                {vehicleTypes?.map((item, key) => (
+                {vehiclesTypes?.map((item, key) => (
                   <option key={key} value={item.data.name}>
                     {item.data.name}
                   </option>
@@ -225,23 +275,52 @@ function BookNow() {
               </select>
             </div>
           </div>
-          {vehicleType != "" && (
+          {vehicle  && (
             <div className="row g-2 mt-1">
               <div className="col">
-                <button
-                  className="btn text-white border-0 w-100 py-3"
-                  style={{ textAlign: "left" }}
+                <span
+                  className="text-white  fw-bold fs-5 border-0 w-100 py-1"
+                  style={{ textAlign: "left",display:"flex",justifyContent:"space-between",alignItems:"center" }}
                 >
-                  Available :{" "}
-                  {vehicleTypes?.filter((item) => item.data.name == vehicleType)
-                    .map((item, key) => item.data.available)}
-                </button>
+                  <span>Available</span>
+                  <span>{vehiclesTypes?.filter((item) => item.data.name == vehicle)
+                    .map((item, key) => item.data.available)} Units</span>
+                </span>
+                <span
+                  className="text-white fw-bold fs-5 border-0 w-100 py-1"
+                  style={{ textAlign: "left",display:"flex",justifyContent:"space-between",alignItems:"center" }}
+                >
+                 <span> Price</span>
+                 <span>{vehiclesTypes?.filter((item) => item.data.name == vehicle)
+                    .map((item, key) => item.data.price)} ₹ / Day</span>
+                </span>
+
+                
+
+                <span
+                  className="text-white fw-bold fs-5 border-0 w-100 py-1"
+                  style={{ textAlign: "left",display:"flex",justifyContent:"space-between",alignItems:"center" }}
+                >
+                 <span>Days</span>
+                 <span>{findDays(fromDate,toDate)}</span>
+                </span>
+
+                <span
+                  className="text-white fw-bold fs-5 border-0 w-100 py-1"
+                  style={{ textAlign: "left",display:"flex",justifyContent:"space-between",alignItems:"center" }}
+                >
+                 <span>Total</span>
+                 <span>{vehiclesTypes?.filter((item) => item.data.name == vehicle)
+                    .map((item, key) => (item.data.price*findDays(fromDate,toDate)))} ₹</span>
+                </span>
+                
+                
               </div>
             </div>
           )}
           <div className="row g-2 mt-1">
             <div className="col">
-              {vehicleTypes?.filter((item) => item.data.name == vehicleType)
+              {vehiclesTypes?.filter((item) => item.data.name == vehicle)
                 .map((item, key) =>
                   item.data.available == 0 ? (
                     <button

@@ -19,7 +19,12 @@ let WEBSITE = {
         },
         {
             name: "vehicles",
-            sub_item: ["vehicle types", "vehicle list", "vehicle agent"],
+            sub_item: ["vehicle types", "vehicle list"],
+            selected: false,
+        },
+        {
+            name: "bookings",
+            sub_item: null,
             selected: false,
         },
         {
@@ -93,7 +98,7 @@ let WEBSITE = {
     },
     action:{
         img:"img/call-to-action.jpg",
-        title:"Contact With Our Certified Agent",
+        title:"Contact Us for any help !",
         desc:"Eirmod sed ipsum dolor sit rebum magna erat. Tempor lorem kasd vero ipsum sit sit diam justo sed vero dolor duo."
     },
     property_agents:{
